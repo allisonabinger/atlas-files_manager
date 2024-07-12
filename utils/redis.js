@@ -6,13 +6,17 @@ class RedisClient {
     constructor() {
         this.client = createClient();
 
+        this.client.on('connect', () => {
+            console.log('Connected to Redis');
+        });
+
         this.client.on('error', (err) => {
             console.error(`Redis Client Error: ${err}`);
         });
 
         this.client.on('end', () => {
             console.log('Redis client disconnected');
-          });
+        });
 
         this.client.connected = true;
     }
@@ -60,4 +64,4 @@ class RedisClient {
 
 const redisClient = new RedisClient();
 
-module.exports = redisClient;
+module.exports = { redisClient };
