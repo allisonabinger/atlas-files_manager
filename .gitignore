@@ -1,3 +1,5 @@
 node_modules/
 redismain.js
 dbmain.js
+dump.rbd
+.env
