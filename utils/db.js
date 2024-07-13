@@ -1,6 +1,8 @@
 // Contains the DBClient class that connects to MongoDB and manages Mongo operations
 const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
+const { createTestScheduler } = require('jest');
+const { SYSTEM_USER_COLLECTION } = require('mongodb/lib/db');
 
 dotenv.config();
 
@@ -52,6 +54,44 @@ class DBClient {
     } catch (error) {
       console.error('Error counting files:', error);
       return 0;
+    }
+  }
+
+//method to create a new user in the db
+  async createUser(email, password) {
+    try {
+      const db = await this.connection;
+      const collection = db.collection('users');
+      const result = await collection.insertOne({ email, password });
+      console.log('Inserted user:', result.ops[0]);
+      return result;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      return null;
+    }
+  }
+
+  // method to find a user by email
+  async findUserByEmail(email) {
+    try {
+      const db = await this.connection;
+      const collection = db.collection('users');
+      return await collection.findOne({ email });
+    } catch (error) {
+      console.error('Error finding user by email:', error);
+      return null;
+    }
+  }
+
+  //method finds user by id
+  async findUserById(id) {
+    try {
+      const db = await this.connection;
+      const collection = db.collection('users');
+      return await collection.findOne({ _id: ObjectId(id) });
+    } catch (error) {
+      console.error('Error finding user by ID:', error);
+      return null;
     }
   }
 }

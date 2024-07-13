@@ -26,10 +26,10 @@ class UsersController {
         const hashedPassword = sha1(password);
 
         //Saves user to the database
-        const newUser = await dbClient.createUser(email, hashedPassword);
+        const result = await dbClient.createUser(email, hashedPassword);
 
         //Returns new user email and id
-        return res.status(201).json({ email: newUser.email, id: newUser.id });
+        return res.status(201).json({ email: result.ops[0].email, id: newUser.insertedId });
     }
 }
 
