@@ -1,5 +1,5 @@
 const { dbClient} = require('../utils/db');
-const { redisClient } = require('../utils/redis')
+const { redisClient } = require('../utils/redis');
 
 const getStatus = async (req, res) => {
     try {
