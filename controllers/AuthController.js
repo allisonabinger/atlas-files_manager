@@ -43,7 +43,7 @@ class AuthController {
     }
 
     // this method signs out the user
-    static async getDiconnect(req, res) {
+    static async getDisconnect(req, res) {
         // retrieves token from request headers
         const token = req.header['x-token'];
 
