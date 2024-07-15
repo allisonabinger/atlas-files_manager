@@ -1,6 +1,6 @@
 const sha1 = require('sha1');
-const redisClient = require('../utils/redis');
-const dbClient = require('../utils/db');
+const { redisClient } = require('../utils/redis');
+const { dbClient } = require('../utils/db');
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -17,14 +17,14 @@ class AuthController {
 
         // decodes the credentialss
         const encodedCredentials = authHeader.split(' ')[1];
-        const decodedCredentials = buffer.from(encodedCredentials, 'base64').toString('ascii');
+        const decodedCredentials = Buffer.from(encodedCredentials, 'base64').toString('ascii');
         const [decodedEmail, decodedPassword] = decodedCredentials.split(':');
 
         // Hashes the password
         const hashedPassword = sha1(decodedPassword);
 
         // finds database user by email
-        const user = await dbClient.getUserEmail(decodedEmail);
+        const user = await dbClient.findUserByEmail(decodedEmail);
 
         // checks if user exists and password
         if(!user || user.password !== hashedPassword) {
@@ -39,13 +39,13 @@ class AuthController {
         await redisClient.set(key, user._id.toString(), 86400);//seconds in a day
 
         // Returns random generted token to the client
-        return res.status(200).json({ token }); // 
+        return res.status(200).json({ token: `${token}` }); // 
     }
 
     // this method signs out the user
     static async getDisconnect(req, res) {
         // retrieves token from request headers
-        const token = req.header['x-token'];
+        const token = req.headers['x-token'];
 
         // checks for token
         if (!token) {
@@ -65,7 +65,7 @@ class AuthController {
         // deletes the token from redis
         await redisClient.del(key);
         // returns no content response
-        return res.status(204).send();
+        return res.status(200).json({ message: 'User successfully disconnected' });
     }      
 }
 

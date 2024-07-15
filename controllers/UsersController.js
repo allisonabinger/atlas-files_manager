@@ -51,7 +51,7 @@ class UsersController {
         // grabs redis key using token
         const key = `auth_${token}`;
         // gets the user id linked to the redis token
-        const userId = await dbClient.get(key);
+        const userId = await redisClient.get(key);
 
         // checks for user id
         if (!userId) {
