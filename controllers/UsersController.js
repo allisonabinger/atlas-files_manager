@@ -26,11 +26,17 @@ class UsersController {
         //Hashing the password
         const hashedPassword = sha1(password);//produces a 160-bit (20-byte) hash value
 
-        //Saves user to the database
-        const result = await dbClient.createUser(email, hashedPassword);
+        //Saves user to the database, createsUser returns ops
+        const newUser = await dbClient.createUser(email, hashedPassword);
 
-        //Returns new user email and id
-        return res.status(201).json({ email: result.ops[0].email, id: newUser.insertedId });
+        if (!newUser) {
+            return res.status(500).json({ error: 'Failed to create new User' })
+        }
+        //Returns new user id parsed and email
+        return res.status(201).json({
+            id: newUser._id.toString(),
+            email: newUser.email
+        });
     }
 
     static async getMe(req, res) {

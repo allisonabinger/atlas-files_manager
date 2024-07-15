@@ -9,10 +9,10 @@ const AuthController = require('../controllers/AuthController');
 // DB and Redis Checks
 router.get('/status', AppController.getStatus);
 router.get('/stats', AppController.getStats);
-// router.post('/users', UserController.postNew);
-router.post('/users', (req, res) => {
-    res.json({ message: 'User creatino endpoint is working' })
-})
+router.post('/users', UserController.postNew);
+// router.post('/users', (req, res) => {
+//     res.json({ message: 'User creatino endpoint is working' })
+// })
 router.get('/connect', AuthController.getConnect);
 router.get('/disconnect', AuthController.getDisconnect);
 router.get('/user/me', UserController.getMe);
