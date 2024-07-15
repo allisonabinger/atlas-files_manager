@@ -63,8 +63,14 @@ class DBClient {
       const db = await this.connection;
       const collection = db.collection('users');
       const result = await collection.insertOne({ email, password });
-      console.log('Inserted user:', result.ops[0]);
-      return result;
+      if (result.insertedId) {
+        console.log('Inserted user:', result.ops[0]);
+        return result.ops[0];
+      } else {
+        throw new Error('failed to insert user')
+      }
+    //   console.log('Inserted user:', result.ops[0]);
+    //   return result;
     } catch (error) {
       console.error('Error creating user:', error);
       return null;

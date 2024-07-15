@@ -1,5 +1,5 @@
 const sha1 = require('sha1');
-const dbClient = require('../utils/db');
+const { dbClient } = require('../utils/db');
 const { redisClient } = require('../utils/redis');
 
 
