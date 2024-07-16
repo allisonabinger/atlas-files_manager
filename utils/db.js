@@ -115,6 +115,31 @@ class DBClient {
       return null;
     }
   }
+
+  // Method to create a file doc in database
+  async createFile(fileDoc) {
+    try {
+      const db = await this.connection;
+      const collection = db.collection('files');
+      const result = await collection.insertOne(fileDoc);
+      return result.ops[0];
+    } catch (error) {
+      console.error('Error creating file:', error);
+      return null;
+      }
+  }
+
+  // Method for finding file by its id
+  async findFileById(id) {
+    try {
+      const db = await this.connection;
+      const collection = db.collection('files');
+      return await collection.findOne({ _id: ObjectId(id) });
+    } catch (error) {
+      console.error('Error finding file by ID:', error);
+      return null;
+    }
+  }
 }
 
 const dbClient = new DBClient();
