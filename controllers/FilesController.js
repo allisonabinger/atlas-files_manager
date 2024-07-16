@@ -14,10 +14,10 @@ class FilesController {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        // grabs redis key using token
-        const key = `auth_${token}`;
+        
         // gets userId linked to the redis token
-        const userId = await redisClient.get(key);
+        const userId = await redisClient.get(`auth_${token}`);
+        console.log(`User ID from token: ${userId}`);
 
         // checks if userId exists
         if (!userId) {
@@ -25,7 +25,8 @@ class FilesController {
         }
 
         // extracts teh file details from body
-        const { name, type, parentId = '0', isPublic = false, data } = req.body;
+        const { name, type, data, parentId = 0, isPublic = false } = req.body;
+        console.log(`File details - Name: ${name}, Type: ${type}, Data: ${data ? 'Present' : 'Not Present'}`);
 
         // checks if the file name is empty
         if (!name) {
@@ -43,17 +44,17 @@ class FilesController {
         }
 
         // checks if the folder contains a parent id
-        if (parentId !== '0') {
-          // finds parent file by its id
-          const parentFile = await dbClient.findFileById(parentId);
-          // checks if the parent file exists
-          if (!parentFile) {
-            return res.status(400).json({ error: 'Parent not found' });
-          }
-          // checks if the parent file is not a folder
-          if (parentFile.type !== 'folder') {
-              return res.status(400).json({ error: 'Parent is not a folder' });
-          }
+        if (parentId !== 0) {
+            // finds parent file by its id
+            const parentFile = await dbClient.findFileById(parentId);
+            // checks if the parent file exists
+            if (!parentFile) {
+                return res.status(400).json({ error: 'Parent not found' });
+            }
+            // checks if the parent file is not a folder
+            if (parentFile.type !== 'folder') {
+                return res.status(400).json({ error: 'Parent is not a folder' });
+            }
         }
 
         // Creates a file doc with the variable listed below
@@ -63,13 +64,19 @@ class FilesController {
             type,
             parentId,
             isPublic,
-            data,
         };
 
         // creates a new file  doc
         if (type === 'folder') {
             const newFile = await dbClient.createFile(fileDoc);
-            return res.status(201).json(newFile);
+            return res.status(201).json({
+                id: newFile._id.toString(),
+                userId: newFile.userId,
+                name: newFile.name,
+                type: newFile.type,
+                isPublic: newFile.isPublic,
+                parentId: newFile.parentId
+            });
         }
 
         // folder path for storing files
@@ -88,7 +95,15 @@ class FilesController {
         //creates file doc to database
         const newFile = await dbClient.createFile(fileDoc);
 
-        return res.status(201).json(newFile);
+        return res.status(201).json({
+            id: newFile._id.toString(),
+            userId: newFile.userId,
+            name: newFile.name,
+            type: newFile.type,
+            isPublic: newFile.isPublic,
+            parentId: newFile.parent_id,
+            localPath: newFile.localPath
+        });
     }
 }
 
