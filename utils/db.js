@@ -3,6 +3,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 const dotenv = require('dotenv');
 const { createTestScheduler } = require('jest');
 const { SYSTEM_USER_COLLECTION } = require('mongodb/lib/db');
+const { transformFromAstSync } = require('@babel/core');
 
 dotenv.config();
 
@@ -152,7 +153,21 @@ class DBClient {
       return null;
     }
   }
-  
+
+  async findFilesByParentAndUser (userId, parentId, page, pageSize) {
+    const skip = page * pageSize;
+
+    // Using aggregation query on collection
+    return await this.collection.aggregate([
+      // matches docs with with parentId and userId
+      { $match: { parentId, userId } },
+      // skips the number of doc specified
+      { $skip: { skip } },
+      // restricting the number of docs
+      { $limit: { pageSize } }
+    //converts the cursor into an array of docs
+    ]).toArray();
+  }
 }
 
 const dbClient = new DBClient();
