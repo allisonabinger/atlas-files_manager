@@ -140,6 +140,19 @@ class DBClient {
       return null;
     }
   }
+
+  async findFileByIdAndUser(fileId, userId) {
+    try {
+      const db = await this.connection;
+      const collection = db.collection('files');
+      const file = await collection.findOne({_id: ObjectId(fileId), userId: ObjectId(userId) });
+      return file;
+    } catch (error) {
+      console.error('Error finding file by id and user ID:', error);
+      return null;
+    }
+  }
+  
 }
 
 const dbClient = new DBClient();
