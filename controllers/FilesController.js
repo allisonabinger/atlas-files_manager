@@ -105,6 +105,62 @@ class FilesController {
             localPath: newFile.localPath
         });
     }
+
+    //
+    static async getShow(req, res) {
+        // retrieves token from request headers
+        const token = req.headers['x-token'];
+        // checks for token
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        // gets userId linked to the redis token
+        const userId = await redisClient.get(`auth_${token}`);
+        console.log(`User ID from token: ${userId}`);
+
+        // checks if userId exists
+        if (!userId) {
+            return res.status(401).json({ errror: 'Unauthorized' });
+        }
+
+        const fileId = req.params.id;
+
+        // obtains the file doc through the database using fileId and user Id
+        const file =await dbClient.findFileByIdAndUser(fileId, userId);
+        // checks if file exists
+        if (!file) {
+            return res.status(404).json({ error: 'Not found' });
+        }
+
+        // returns file doc
+        return res.status(200).json(file);
+    }
+
+    //
+    static async getIndex(req, res) {
+        // retrieves token from request headers
+        const token = req.headers['x-token'];
+        // checks for token
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const userId = await redisClient.get(`auth_${token}`);
+        console.log(`User ID from token: ${userId}`);
+
+        // checks if userId exists
+        if (!userId) {
+            return res.status(401).json({ errror: 'Unauthorized' });
+        }
+
+        const parentId = req.query.parentId || '0';
+        const page = parseInt(req.query.page, 10) || 0;
+        const pageSize = 20;
+
+        const files = await dbClient.findFilesByParentAndUser(parentId, userId, page, pageSize);
+        
+        return res.status(200).json(files);
+    }
 }
 
 module.exports = FilesController;
