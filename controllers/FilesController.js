@@ -3,6 +3,7 @@ const { dbClient } = require("../utils/db");
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
+const mime = require('mime-types');
 
 
 class FilesController {
@@ -19,7 +20,7 @@ class FilesController {
         
         // gets userId linked to the redis token
         const userId = await redisClient.get(`auth_${token}`);
-        console.log(`User ID from token: ${userId}`);
+        // console.log(`User ID from token: ${userId}`);
 
         // checks if userId exists
         if (!userId) {
@@ -232,6 +233,44 @@ class FilesController {
         } catch (error) {
             console.error('Error publishing the file: ', error);
             return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    // getFile accesses the data of a file and display's its contents
+    static async getFile(req, res) {
+        const token = req.headers['x-token'];
+        const fileId = req.params.id;
+
+        if (!fileId) {
+            return res.status(400).json({ error: 'Missing or invalid fileId' });
+        }
+        const userId = await redisClient.get(`auth_${token}`);
+        if (!userId) {
+            return res.status(400).json({ error: 'Missing or invalid userId' });
+        }
+        try {
+            const file = await dbClient.findFileById(fileId);
+            if (!file) {
+                return res.status(400).json({ error: 'File not found' });
+            }
+
+            if (!file.isPublic && (!userId || file.userId !== userId)) {
+                return res.status(404).json({error: 'Not found' });
+            }
+            if (file.type == 'folder') {
+                return res.status(400).json({ error: "A folder doesn't have content" });
+            }
+            const filePath = file.localPath;
+            if (!fs.existsSync(filePath)) {
+                return res.status(404).json({ error: 'Not found' });
+            }
+            // determine MIME type, octet-stream is used to rep. binary data, default mime type
+            const mimeType = mime.lookup(file.name) || 'application/octet-stream';
+            res.setHeader('Content-Type', mimeType);
+            fs.createReadStream(filePath).pipe(res);
+        } catch (error) {
+            console.error('Error retrieving file: ', error);
+            res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 }
