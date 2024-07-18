@@ -30,10 +30,12 @@ class DBClient {
     });
   }
 
+  // connection status of MongoDB
   isAlive() {
     return this.client && this.client.isConnected();
   }
 
+  // counts the number of users inside of the DB collection 'users
   async nbUsers() {
     try {
       const db = await this.connection;
@@ -46,6 +48,7 @@ class DBClient {
     }
   }
 
+  // counts the number of files inside of the files collection 'files'
   async nbFiles() {
     try {
       const db = await this.connection;
@@ -142,6 +145,7 @@ class DBClient {
     }
   }
 
+  // finds the file by id and user id
   async findFileByIdAndUser(fileId, userId) {
     try {
       const db = await this.connection;
@@ -154,6 +158,7 @@ class DBClient {
     }
   }
 
+  // finds the file based on parentId and the userId
   async findFilesByParentAndUser (userId, parentId, page, pageSize) {
 
     //console.log(`userId: ${userId}, parentId: ${parentId}, page: ${page}, pageSize: ${pageSize}`);
@@ -187,6 +192,7 @@ class DBClient {
     }
   }
 
+  // updates the isPublic attribute of the file given
   async updateFilePublicStatus(userId, fileId, status) {
     try {
         const db = await this.connection;
