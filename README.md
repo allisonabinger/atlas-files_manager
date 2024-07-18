@@ -1,10 +1,11 @@
   <h1 align="center">
-  <img src="./assets/fileManagerLogo.png" align="left" width="50">
-   Files Manager: A Simple Data Management Platform
-  <img src="./assets/fileManagerLogo.png" align="right" width="50"></h1>
+  <img src="./assets/fileManagerLogo.png" align="left" width="75">
+   Files Manager
+  <img src="./assets/fileManagerLogo.png" align="right" width="75"></h1>
+  <h2 align="center">A Simple Data Management Platform</h2>
 
 ## Intro
-This File Manager software is a simple platform designed to upload and view files. It utilizes the following for a safe interactions and manipulations:
+This File Manager software is a simple platform designed to upload and securely view files. It utilizes the following for a safe interactions and manipulations:
 -  User Authentication
 -  CRUD Actions
 -  Permissions
