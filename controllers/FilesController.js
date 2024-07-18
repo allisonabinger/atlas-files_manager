@@ -6,6 +6,8 @@ const path = require('path');
 
 
 class FilesController {
+
+    // posts a new file based on request body, called on by POST /files
     static async postUpload(req, res) {
         // retrieves token from request headers
         const token = req.headers['x-token'];
@@ -106,7 +108,7 @@ class FilesController {
         });
     }
 
-    //
+    // Retrieves the file document based on the file id, called on by GET /files/:id
     static async getShow(req, res) {
         // retrieves token from request headers
         const token = req.headers['x-token'];
@@ -136,7 +138,8 @@ class FilesController {
         return res.status(200).json(file);
     }
 
-    //
+    // Retrieves all files for documents for a specific parentId with pagination, 
+    // called on by GET /files 
     static async getIndex(req, res) {
         // retrieves token from request headers
         const token = req.headers['x-token'];
@@ -163,6 +166,8 @@ class FilesController {
         return res.status(200).json(files);
     }
 
+    // updates the isPublic status for a specific file to true
+    // called on by PUT /publish
     static async putPublish(req, res) {
         // get token
         const token = req.headers['x-token'];
@@ -192,7 +197,8 @@ class FilesController {
             return res.status(500).json({ error: 'Internal Server Error' })
         }
     }
-
+     // updates the isPublic status for a specific file to false
+    // called on by PUT /unpublish
     static async putUnpublish(req, res) {
         // get token
         const token = req.headers['x-token'];
