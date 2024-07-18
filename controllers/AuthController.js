@@ -1,9 +1,11 @@
+// Contains the AuthController class to manage authentication for users
 const sha1 = require('sha1');
 const { redisClient } = require('../utils/redis');
 const { dbClient } = require('../utils/db');
 const { v4: uuidv4 } = require('uuid');
 
 class AuthController {
+    // connects the user based on credentials provided to provid and auth token stored in redis
     static async getConnect(req, res) {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -27,6 +29,7 @@ class AuthController {
         return res.status(200).json({ token });
     }
 
+    // disconnects user and removes the auth token in redis
     static async getDisconnect(req, res) {
         const token = req.headers['x-token'];
         if (!token) {
