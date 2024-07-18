@@ -126,7 +126,7 @@ class FilesController {
         const fileId = req.params.id;
 
         // obtains the file doc through the database using fileId and user Id
-        const file =await dbClient.findFileByIdAndUser(fileId, userId);
+        const file = await dbClient.findFileByIdAndUser(fileId, userId);
         // checks if file exists
         if (!file) {
             return res.status(404).json({ error: 'Not found' });
