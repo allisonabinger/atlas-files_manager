@@ -155,18 +155,36 @@ class DBClient {
   }
 
   async findFilesByParentAndUser (userId, parentId, page, pageSize) {
-    const skip = page * pageSize;
 
-    // Using aggregation query on collection
-    return await this.collection.aggregate([
-      // matches docs with with parentId and userId
-      { $match: { parentId, userId } },
-      // skips the number of doc specified
-      { $skip: { skip } },
-      // restricting the number of docs
-      { $limit: { pageSize } }
-    //converts the cursor into an array of docs
-    ]).toArray();
+    //console.log(`userId: ${userId}, parentId: ${parentId}, page: ${page}, pageSize: ${pageSize}`);
+    const skip = page * pageSize;
+    const db = await this.connection;
+    const collection = db.collection('files');
+
+    try {
+        let query = { userId: userId };
+
+        if (parentId && parentId !== '0') {
+            query.parentId = parentId;
+        }
+
+        //console.log('Query: ', JSON.stringify(query));
+        const aggregateQuery = [
+            { $match: query },
+            { $skip: skip },
+            { $limit: pageSize }
+        ];
+
+        //console.log('Aggregate Query: ', JSON.stringify(aggregateQuery))
+
+        const files = await collection.aggregate(aggregateQuery).toArray();
+        //console.log('Found Files:', JSON.stringify(files));
+        return files;
+    
+    } catch (error) {
+       //console.error('Error finding the files by parent and user ID: ', error);
+        return [];
+    }
   }
 }
 
