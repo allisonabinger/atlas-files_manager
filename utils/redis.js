@@ -20,11 +20,12 @@ class RedisClient {
 
         this.client.connected = true;
     }
-    
+    // connection status to redis
     isAlive() {
         return this.client.connected;
     }
 
+    // gets the value stored in redis based on given key
     async get(key) {
         return new Promise((res, rej) => {
             this.client.get(key, (err, reply) => {
@@ -37,6 +38,7 @@ class RedisClient {
         });
     }
 
+    // sets the value and stores in redis with key for a certain amount of time
     async set(key, value, durationSeconds) {
         return new Promise((res, rej) => {
             this.client.set(key, value, 'EX', durationSeconds, (err, reply) => {
@@ -49,6 +51,7 @@ class RedisClient {
         });
     }
 
+    // deletes the key stored in redis
     async del(key) {
         return new Promise((res, rej) => {
             this.client.del(key, (err, reply) => {
