@@ -157,7 +157,11 @@ $ curl -XPUT 0.0.0.0:5000/files/5f1e8896c7ba06511e683b25/unpublish -H "X-Token: 
 $ 
 ```
 ### Accessing File Data
-
+You can access the data of a file if you are the owner or if the file is public. You must be authenticated and know the id of the file. Here is an example of the request using /files/:id/data:
+```
+curl -XGET 0.0.0.0:5000/files/5f1e879ec7ba06511e683b22/data -H "X-Token: f21fb953-16f9-46ed-8d9c-84c6450ec80f" ; echo ""
+Hello Webstack!
+```
 ---
 
 ### Repository Structure
