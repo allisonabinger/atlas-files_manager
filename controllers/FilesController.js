@@ -214,7 +214,7 @@ class FilesController {
             console.log('could not get userId');
             return res.status(401).json({ error: 'Unauthorized' });
         }
-        // get file id based on request
+        // get file id based on request in parameter
         const fileId = req.params.id;
         //console.log(`fileId: ${fileId}`)
         if (!fileId) {
