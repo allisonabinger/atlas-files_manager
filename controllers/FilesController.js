@@ -116,7 +116,7 @@ class FilesController {
         }
         // gets userId linked to the redis token
         const userId = await redisClient.get(`auth_${token}`);
-        console.log(`User ID from token: ${userId}`);
+       // console.log(`User ID from token: ${userId}`);
 
         // checks if userId exists
         if (!userId) {
@@ -161,6 +161,72 @@ class FilesController {
         //console.log('files:', JSON.stringify(files))
         
         return res.status(200).json(files);
+    }
+
+    static async putPublish(req, res) {
+        // get token
+        const token = req.headers['x-token'];
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        // get userId based on token
+        const userId = await redisClient.get(`auth_${token}`);
+        if (!userId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        // get file id based on request
+        const fileId = req.params.id;
+        if (!fileId) {
+            return res.status(401).json({ error: 'Missing or invalid file ID' });
+        }
+
+        try {
+            const updatedFile = await dbClient.updateFilePublicStatus(userId, fileId, true);  
+
+            if (!updatedFile) {
+                return res.status(404).json({ error: 'Not found' });
+            }
+            return res.status(200).json(updatedFile);
+        } catch (error) {
+            console.error('Error publishing the file: ', error);
+            return res.status(500).json({ error: 'Internal Server Error' })
+        }
+    }
+
+    static async putUnpublish(req, res) {
+        // get token
+        const token = req.headers['x-token'];
+        //console.log(`token: ${token}`);
+        if (!token) {
+            console.log('Could not get token');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        // get userId based on token
+        const userId = await redisClient.get(`auth_${token}`);
+        //console.log(`userId: ${userId}`);
+        if (!userId) {
+            console.log('could not get userId');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        // get file id based on request
+        const fileId = req.params.id;
+        //console.log(`fileId: ${fileId}`)
+        if (!fileId) {
+            return res.status(401).json({ error: 'Missing or invalid file ID' });
+            console.log('could not get fileId')
+        }
+
+        try {
+            const updatedFile = await dbClient.updateFilePublicStatus(userId, fileId, false);  
+
+            if (!updatedFile) {
+                return res.status(404).json({ error: 'Not found' });
+            }
+            return res.status(200).json(updatedFile);
+        } catch (error) {
+            console.error('Error publishing the file: ', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
     }
 }
 

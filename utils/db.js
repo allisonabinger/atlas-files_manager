@@ -186,6 +186,26 @@ class DBClient {
         return [];
     }
   }
+
+  async updateFilePublicStatus(userId, fileId, status) {
+    try {
+        const db = await this.connection;
+        const collection = db.collection('files');
+        const query = { _id: new ObjectId(fileId), userId: userId };
+
+        const file = await collection.findOne(query);
+        if (!file) {
+            throw new error
+        }
+        // updates the isPublic attribute based on status (true/false)
+        await collection.updateOne(query, { $set: { isPublic: status } });
+        const updatedFile = await collection.findOne(query);
+
+        return updatedFile;
+    } catch (error) {
+        console.error('Error updating the file public status: ', err);
+    }
+  }
 }
 
 const dbClient = new DBClient();
