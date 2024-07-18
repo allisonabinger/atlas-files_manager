@@ -156,15 +156,17 @@ class DBClient {
 
   async findFilesByParentAndUser (userId, parentId, page, pageSize) {
     const skip = page * pageSize;
+    const db = await this.connection;
+    const collection = db.collection('files');
 
     // Using aggregation query on collection
-    return await this.collection.aggregate([
+    return await collection.aggregate([
       // matches docs with with parentId and userId
-      { $match: { parentId, userId } },
+      { $match: parentId, userId },
       // skips the number of doc specified
-      { $skip: { skip } },
+      { $skip: skip },
       // restricting the number of docs
-      { $limit: { pageSize } }
+      { $limit: pageSize }
     //converts the cursor into an array of docs
     ]).toArray();
   }

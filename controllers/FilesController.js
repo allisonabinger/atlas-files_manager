@@ -150,7 +150,7 @@ class FilesController {
 
         // checks if userId exists
         if (!userId) {
-            return res.status(401).json({ errror: 'Unauthorized' });
+            return res.status(401).json({ error: 'Unauthorized' });
         }
 
         const parentId = req.query.parentId || '0';
