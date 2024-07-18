@@ -146,7 +146,7 @@ class FilesController {
         }
 
         const userId = await redisClient.get(`auth_${token}`);
-        console.log(`User ID from token: ${userId}`);
+        //console.log(`User ID from token: ${userId}`);
 
         // checks if userId exists
         if (!userId) {
@@ -157,7 +157,8 @@ class FilesController {
         const page = parseInt(req.query.page, 10) || 0;
         const pageSize = 20;
 
-        const files = await dbClient.findFilesByParentAndUser(parentId, userId, page, pageSize);
+        const files = await dbClient.findFilesByParentAndUser(userId, parentId, page, pageSize);
+        //console.log('files:', JSON.stringify(files))
         
         return res.status(200).json(files);
     }
